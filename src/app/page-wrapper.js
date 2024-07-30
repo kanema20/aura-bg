@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import styles from "./page.module.css";
+import "./page.module.css";
 
 import UploadForm from "./components/UploadForm";
 import { ConfigProvider, theme, Button, Layout, Typography } from "antd";
