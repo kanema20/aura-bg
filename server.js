@@ -41,31 +41,37 @@ const upload = multer({ storage });
 
 // File upload endpoint
 app.post("/upload", upload.single("image"), async(req, res) => {
-  console.log("req.file ", req.file);
-  if (!req.file) {
-    return res.status(400).send("No file uploaded");
-  }
-  const origFileName = req.file.filename;
-  const uploadedFileDest = `${req.file.destination}/${req.file.filename}`;
-  console.log("uploadedFileDest ", uploadedFileDest);
-  const uploadedFile = fs.readFileSync(uploadedFileDest, "binary");
-  const folderPath = uploadedFileDest.split("aura-bg\\")[1];
-  console.log("folderPath ", folderPath);
-  const result = await removeImageBackground(folderPath)
-    .catch(error => console.error("Error removing background:", error));
-  console.log("result ", result);
-  const fileName = `${guid()}___${req.file.originalname}`;
-  console.log("fileName ", fileName);
-  const newPath = path.resolve(__dirname, `public/uploads/${fileName}`);
-  console.log("newPath ", newPath);
-  fs.writeFileSync(newPath, result);
-  res.json({
-    data: {
-      message: "File uploaded successfully",
-      imageUrl: fileName,
-      origFileName
+  try {
+    console.log("req.file ", req.file);
+    if (!req.file) {
+      return res.status(400).send("No file uploaded");
     }
-  });
+    const origFileName = req.file.filename;
+    const uploadedFileDest = `${req.file.destination}/${req.file.filename}`;
+    console.log("uploadedFileDest ", uploadedFileDest);
+    const uploadedFile = fs.readFileSync(uploadedFileDest, "binary");
+    const folderPath = uploadedFileDest.split("aura-bg\\")[1];
+    console.log("folderPath ", folderPath);
+    const result = await removeImageBackground(folderPath)
+      .catch(error => console.error("Error removing background:", error));
+    console.log("result ", result);
+    const fileName = `${guid()}___${req.file.originalname}`;
+    console.log("fileName ", fileName);
+    const newPath = path.resolve(__dirname, `public/uploads/${fileName}`);
+    console.log("newPath ", newPath);
+    fs.writeFileSync(newPath, result);
+    res.json({
+      data: {
+        message: "File uploaded successfully",
+        imageUrl: fileName,
+        origFileName
+      }
+    });
+  }
+  catch (err) {
+    console.error("error", "server", err);
+    return res.status(500).send("Internal server error");
+  }
 });
 
 // Serve uploaded files statically
