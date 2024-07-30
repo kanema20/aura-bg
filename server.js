@@ -17,7 +17,7 @@ async function removeImageBackground(imgSource) {
 }
 
 
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: "http://49.13.145.42:3000" }));
 
 // Set up storage engine with multer
 const storage = multer.diskStorage({
