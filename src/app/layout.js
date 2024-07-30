@@ -1,9 +1,9 @@
-import "./globals.css";
-import { Inter } from "next/font/google";
+import { Archivo } from "next/font/google";
 import { ConfigProvider, theme } from "antd";
 import THEME from "./_theme";
+import "./globals.css";
 
-const inter = Inter({ subsets: [ "latin" ] });
+const archivo = Archivo({ subsets: [ "latin" ] });
 
 export const metadata = {
   title: "AURA MEME",
@@ -13,11 +13,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <ConfigProvider
-          theme={{ token: THEME }}>
-          {children}
-        </ConfigProvider>
+      <body className={archivo.className}>
+        {children}
       </body>
     </html>
   );

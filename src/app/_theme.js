@@ -89,8 +89,10 @@ const THEME = {
   controlHeightSM: 24,  // small control height
   controlHeightXS: 16,  // extra small control height
 
-  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",  // font family
-  fontFamilyCode: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace",  // code font family
+  // fontFamily: "Archivo",  // font family
+  // fontFamilyCode: "Archivo",  // code font family
+  fontFamily: "inherit",  // font family
+  fontFamilyCode: "inherit",  // code font family
   fontSize: 14,  // base font size
   fontSizeHeading1: 38,  // h1 font size
   fontSizeHeading2: 30,  // h2 font size
