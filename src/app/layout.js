@@ -7,7 +7,7 @@ const archivo = Archivo({ subsets: [ "latin" ] });
 
 export const metadata = {
   title: "AURA MEME",
-  description: "",
+  description: ""
 };
 
 export default function RootLayout({ children }) {
