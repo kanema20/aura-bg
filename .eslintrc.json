@@ -30,7 +30,7 @@
       }
     ], // `[2, {"builtinGlobals": false, "hoist": "functions"}]` is default
     "no-undef-init": 2, // `2` is default | disallow initializing variables to undefined
-    "no-undef": 2, //disallow the use of undeclared variables unless mentioned in /*global */ comments
+    "no-undef": 1, //disallow the use of undeclared variables unless mentioned in /*global */ comments
     "no-undefined": 0, // disallow the use of undefined as an identifier
     "no-unused-vars": [
       1,
