@@ -50,7 +50,7 @@ app.post("/upload", upload.single("image"), async(req, res) => {
     const uploadedFileDest = `${req.file.destination}/${req.file.filename}`;
     console.log("uploadedFileDest ", uploadedFileDest);
     const uploadedFile = fs.readFileSync(uploadedFileDest, "binary");
-    const folderPath = uploadedFileDest.split("aura-bg\\")[1];
+    const folderPath = uploadedFileDest.split("aura-bg\\")[1] || uploadedFileDest.split("aura-bg/")[1];
     console.log("folderPath ", folderPath);
     const result = await removeImageBackground(folderPath)
       .catch(error => console.error("Error removing background:", error));
