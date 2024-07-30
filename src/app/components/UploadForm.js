@@ -1,13 +1,15 @@
+/* eslint-disable react/no-multi-comp */
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import axios from "axios";
 import { Button, Checkbox, Form, Image, Row, Col, Radio, message, Upload, Input, ColorPicker } from "antd";
 import { FileImageOutlined, SaveOutlined } from "@ant-design/icons";
-import Dragger from 'antd/es/upload/Dragger';
-import useImage from 'use-image';
-import { Stage, Layer, Image as KonvaImage, Transformer, Text as KonvaText } from 'react-konva';
-import _ from 'lodash';
+import Dragger from "antd/es/upload/Dragger";
+import useImage from "use-image";
+import { Stage, Layer, Image as KonvaImage, Transformer, Text as KonvaText } from "react-konva";
+import _ from "lodash";
+
 
 const BACKGROUNDS = [
   "/images/aura-bg/0.jpg",
@@ -28,10 +30,10 @@ const BACKGROUNDS = [
 const CANVAS_SIZE = 600;
 const TEXT_BOTTOM_PADDING = 50;
 const INITIALS = {
-  textColor: '#1677FF',
-  inputText: '+ 664,569 AURA',
-  selectedBackgroundIndex: 0,
-}
+  textColor: "#1677FF",
+  inputText: "+ 664,569 AURA",
+  selectedBackgroundIndex: "0"
+};
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -43,13 +45,17 @@ const getBase64 = (file) =>
 
 export default function UploadForm() {
   const [ image, setImage ] = useState(null);
-  const [ resultImageUrl, setResultImageUrl ] = useState(null);
-  const [ selectedBackgroundIndex, setSelectedBackgroundIndex ] = useState(0);
+  const [ resultImageUrl, setResultImageUrl ] = useState("");
+  const [ origFileName, setOrigFileName ] = useState("");
+  const [ selectedBackgroundIndex, setSelectedBackgroundIndex ] = useState("0");
   const [ previewOpen, setPreviewOpen ] = useState(false);
-  const [ previewImage, setPreviewImage ] = useState('');
+  const [ previewImage, setPreviewImage ] = useState("");
   const [ isSelected, setIsSelected ] = useState(false);
-  const [ inputText, setInputText ] = useState('+ 664,569 AURA');
-  const [ textColor, setTextColor ] = useState('#1677FF');
+  const [ inputText, setInputText ] = useState("+ 664,569 AURA");
+  const [ textColor, setTextColor ] = useState("#1677FF");
+  console.log("textColor ", textColor);
+  const [ form ] = Form.useForm();
+  console.log("form ", form);
 
   const stageRef = useRef(null);
   const mainImageRef = useRef(null);
@@ -59,28 +65,46 @@ export default function UploadForm() {
 
   const handleExport = useCallback(() => {
     const uri = stageRef.current.toDataURL();
-    downloadURI(uri, `AURA__${(new Date).getTime()}.png`);
-  }, [stageRef]);
+    downloadURI(uri, `AURA__${(new Date()).getTime()}.png`);
+  }, [ stageRef ]);
 
   const downloadURI = useCallback((uri, name) => {
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.download = name;
     link.href = uri;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    message.success("Image saved successfully!");
   }, []);
 
-  const reset = useCallback(() => {
+  const handleReset = useCallback(() => {
     setImage(null);
     setResultImageUrl(null);
-    setSelectedBackgroundIndex(0);
+    setSelectedBackgroundIndex(INITIALS.selectedBackgroundIndex);
     setPreviewOpen(false);
-    setPreviewImage('');
+    setPreviewImage("");
     setIsSelected(false);
     setInputText(INITIALS.inputText);
     setTextColor(INITIALS.textColor);
-  }, [])
+    form.setFieldsValue({
+      selectedBackgroundIndex: INITIALS.selectedBackgroundIndex,
+      inputText: INITIALS.inputText,
+      inputColor: INITIALS.textColor
+    });
+  }, [ form ]);
+  const handleRandomize = useCallback(() => {
+    setSelectedBackgroundIndex(_.random(0, BACKGROUNDS.length - 1).toString());
+    const randomInput = `+ ${_.random(100, 999)},${_.random(100, 999)} AURA`;
+    setInputText(randomInput);
+    const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    setTextColor(randomColor);
+    form.setFieldsValue({
+      selectedBackgroundIndex: _.random(0, BACKGROUNDS.length - 1).toString(),
+      inputText: randomInput,
+      inputColor: randomColor
+    });
+  }, [ form ]);
 
   useEffect(() => {
     if (isSelected && mainImageTransformRef.current && mainImageRef.current) {
@@ -89,7 +113,7 @@ export default function UploadForm() {
     }
   }, [ isSelected, mainImageRef, mainImageTransformRef ]);
 
-  const handlePreview = async (file) => {
+  const handlePreview = async(file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
@@ -97,20 +121,17 @@ export default function UploadForm() {
     setPreviewOpen(true);
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async() => {
     const formData = new FormData();
-    formData.append('image', image);
+    formData.append("image", image);
 
     try {
-      const response = await axios.post('http://localhost:3001/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ADDRESS}/upload`, formData, { headers: { "Content-Type": "multipart/form-data" } });
       const imageUrl = [ window.location.origin, "uploads", response.data.imageUrl ].join("/");
       setResultImageUrl(imageUrl);
-    } catch (error) {
-      console.error('Error uploading the image', error);
+    }
+    catch (error) {
+      console.error("error ", error);
     }
   };
 
@@ -118,55 +139,52 @@ export default function UploadForm() {
     <Row gutter={16}>
       <Col span={8}>
         <Form
+          form={form}
           name="basic"
-          layout='vertical'
+          layout="vertical"
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
           style={{ maxWidth: CANVAS_SIZE }}
           initialValues={{ remember: true }}
-          autoComplete="off"
-        >
+          autoComplete="off">
           <Form.Item
-            layout='vertical'
-            vertical
+            layout="vertical"
             labelCol={{ span: 24 }}
             wrapperCol={{ span: 24 }}
             label="Upload your avatar or pp"
-            name="image"
-          >
+            name="image">
             <div className="flex">
               {previewImage && (
                 <Image
-                  wrapperStyle={{ display: 'none' }}
+                  wrapperStyle={{ display: "none" }}
                   preview={{
                     visible: previewOpen,
                     onVisibleChange: (visible) => setPreviewOpen(visible),
-                    afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                    afterOpenChange: (visible) => !visible && setPreviewImage("")
                   }}
-                  className='h-full max-w-[100px] object-cover'
-                  src={"/uploads/" + previewImage}
-                />
+                  className="h-full max-w-[100px] object-cover"
+                  src={`/uploads/${previewImage}`} />
               )}
               <Dragger
-                className='grow w-full'
-                name={'image'}
+                className="grow w-full"
+                name="image"
                 onPreview={handlePreview}
                 multiple={false}
-                action={'http://localhost:3001/upload'}
+                action={`${process.env.NEXT_PUBLIC_API_ADDRESS}/upload`}
                 onChange={(info) => {
                   const { status } = info.file;
-                  if (status !== 'uploading') {
-                    console.log(info.file, info.fileList);
+                  if (status !== "uploading") {
+                    console.log("status ", status);
                   }
-                  if (status === 'done') {
+                  if (status === "done") {
                     setPreviewImage(info.file.response.data.origFileName);
                     setResultImageUrl(info.file.response.data.imageUrl);
                     message.success(`${info.file.name} file uploaded successfully.`);
-                  } else if (status === 'error') {
+                  }
+                  else if (status === "error") {
                     message.error(`${info.file.name} file upload failed.`);
                   }
-                }}
-              >
+                }}>
                 <p className="ant-upload-drag-icon">
                   <FileImageOutlined />
                 </p>
@@ -179,16 +197,19 @@ export default function UploadForm() {
             label="Aura Backgrounds"
             labelCol={{ span: 24 }}
             wrapperCol={{ span: 24 }}
-            initialValue={selectedBackgroundIndex}>
-            <Radio.Group className='flex flex-wrap'>
+            initialValue={String(selectedBackgroundIndex)}>
+            <Radio.Group
+              value={String(selectedBackgroundIndex)}
+              className="flex flex-wrap">
               {_.map(BACKGROUNDS, (bg, index) => (
                 <Radio
+                  key={index}
                   onChange={e => {
-                    console.log("e.target.value ", e.target.value);
-                    setSelectedBackgroundIndex(e.target.value)
+                    setSelectedBackgroundIndex(e.target.value);
+                    form.setFieldsValue({ selectedBackgroundIndex: e.target.value });
                   }}
-                  value={index}>
-                  <Image width={32} src={bg}></Image>
+                  value={String(index)}>
+                  <Image width={32} src={bg} />
                 </Radio>
               ))}
             </Radio.Group>
@@ -198,104 +219,119 @@ export default function UploadForm() {
             <Col span={16}>
               <Form.Item
                 labelCol={{ span: 24 }}
-                wrapperCol={{ span: 24 }}
                 label="Text to add"
                 initialValue={inputText}
+                shouldUpdate={(prevValues, curValues) => inputText !== curValues.inputText}
                 name="inputText"
-                wrapperCol={{ span: 24 }}
-              >
+                wrapperCol={{ span: 24 }}>
                 <Input
+                  name="inputText"
                   value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                />
+                  onChange={(e) => {
+                    setInputText(e.target.value);
+                    form.setFieldValue("inputText", e.target.value);
+                  }} />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                wrapperCol={{ span: 24 }}
-                style={{ marginTop: 30 }}
-                label=""
+              <ColorPicker
+                className="mt-[30px]"
                 name="inputColor"
-                wrapperCol={{ span: 24 }}
-              >
-                <ColorPicker
-                  showText
-                  onChangeComplete={color => {
-                    console.log("color ", color);
-                    setTextColor(color.toHexString())
-                  }}
-                  value={textColor} />
-              </Form.Item>
+                showText
+                defaultFormat="hex"
+                disabledAlpha
+                value={textColor}
+                onChangeComplete={color => {
+                  setTextColor(color.toHexString());
+                }} />
             </Col>
           </Row>
         </Form>
 
-        <div className="flex items-center justify-center">
-          <Button className='grow' size="large">RESET</Button>
-          <Button className='grow' size="large">RANDOMIZE</Button>
+        <div className="flex items-center justify-center w-full">
+          <Button
+            onClick={handleReset}
+            className="grow"
+            size="large">RESET</Button>
+          <Button
+            onClick={handleRandomize}
+            className="grow"
+            size="large">RANDOMIZE</Button>
+
         </div>
       </Col>
 
       <Col span={16}>
-        <Stage id='stage' width={CANVAS_SIZE} height={CANVAS_SIZE} ref={stageRef}>
-          <Layer>
-            <BackgroundImage
-              setIsSelected={setIsSelected}
-              selectedBackgroundIndex={selectedBackgroundIndex}
-              backgroundImageRef={backgroundImageRef}
-            />
-            <MainImage
-              resultImageUrl={resultImageUrl}
-              mainImageRef={mainImageRef}
-              isSelected={isSelected}
-              setIsSelected={setIsSelected}
-              mainImageTransformRef={mainImageTransformRef}
-            />
-            <ResizableText
-              inputText={inputText}
-              textColor={textColor}
-              textTransformRef={textTransformRef}
-              isSelected={isSelected}
-              setIsSelected={setIsSelected}
-            />
-          </Layer>
-        </Stage>
-        <div className="flex justify-end mt-2">
-          <Button
-            className='px-10'
-            disabled={!resultImageUrl}
-            size="large"
-            color="primary">
-            <SaveOutlined />
-            SAVE IMAGE
-          </Button>
+        <div className="flex flex-col items-end">
+          <Stage id="stage" width={CANVAS_SIZE} height={CANVAS_SIZE}
+            ref={stageRef}>
+            <Layer>
+              <BackgroundImage
+                setIsSelected={setIsSelected}
+                selectedBackgroundIndex={selectedBackgroundIndex}
+                backgroundImageRef={backgroundImageRef} />
+              <MainImage
+                resultImageUrl={resultImageUrl}
+                mainImageRef={mainImageRef}
+                isSelected={isSelected}
+                setIsSelected={setIsSelected}
+                mainImageTransformRef={mainImageTransformRef} />
+              <ResizableText
+                inputText={inputText}
+                textColor={textColor}
+                textTransformRef={textTransformRef}
+                isSelected={isSelected}
+                setIsSelected={setIsSelected} />
+            </Layer>
+          </Stage>
+          <div className="flex justify-end mt-2">
+            <Button
+              onClick={handleExport}
+              className="px-10"
+              disabled={!resultImageUrl}
+              size="large"
+              color="primary"
+              icon={<SaveOutlined />}>
+              SAVE IMAGE
+            </Button>
+          </div>
         </div>
       </Col>
     </Row>
   );
 }
 
-const MainImage = ({ resultImageUrl, mainImageRef, isSelected, setIsSelected, mainImageTransformRef }) => {
-  const [ image ] = useImage(resultImageUrl ? "http://localhost:3000" + "/uploads/" + resultImageUrl : null);
+const MainImage = ({
+  resultImageUrl, mainImageRef, isSelected, setIsSelected, mainImageTransformRef
+}) => {
+  const fullUrl = resultImageUrl ? `${window.location.origin}/uploads/${resultImageUrl}` : null;
+  const [ image ] = useImage(fullUrl);
 
   useEffect(() => {
-    if (mainImageRef.current && image) {
-      const img = new window.Image();
-      img.src = resultImageUrl;
-      img.onload = () => {
-        const imageNode = mainImageRef.current;
-        imageNode.width(img.width);
-        imageNode.height(img.height);
+    if (!mainImageRef.current && !image) return;
+    const img = new window.Image();
+    img.src = fullUrl;
 
-        const scaleX = CANVAS_SIZE / img.width;
-        const scaleY = CANVAS_SIZE / img.height;
-        const scale = Math.min(scaleX, scaleY);
-        imageNode.scaleX(scale);
-        imageNode.scaleY(scale);
-      };
-    }
-  }, [ image, resultImageUrl ]);
+    img.onload = () => {
+      const node = mainImageRef.current;
+      const scaleX = CANVAS_SIZE / img.width;
+      const scaleY = CANVAS_SIZE / img.height;
+      const scale = Math.min(scaleX, scaleY);
+      const newWidth = img.width * scale;
+      const newHeight = img.height * scale;
+      const x = (CANVAS_SIZE - newWidth) / 2;
+      // const y = CANVAS_SIZE - newHeight;
+      node.scaleX(Math.min(scaleX, scaleY));
+      node.scaleY(Math.min(scaleX, scaleY));
+      // node.width(newWidth);
+      // node.height(newHeight);
+      // node.x(x);
+      // node.y(y);
+      node.getLayer().batchDraw();
+    };
+  }, [ resultImageUrl ]);
+
+
 
   if (!resultImageUrl) return null;
 
@@ -307,8 +343,11 @@ const MainImage = ({ resultImageUrl, mainImageRef, isSelected, setIsSelected, ma
         draggable
         onClick={() => setIsSelected(oldState => !oldState)}
         shadowColor="white"
-        shadowBlur={50}
-        shadowOffset={{ x: 0, y: 0 }}
+        shadowBlur={10}
+        shadowOffset={{
+          x: 0,
+          y: -5
+        }}
         shadowEnabled
         shadowForStrokeEnabled
         shadowOpacity={1}
@@ -323,36 +362,40 @@ const MainImage = ({ resultImageUrl, mainImageRef, isSelected, setIsSelected, ma
           const nodeHeight = node.height() * scaleY;
           node.height(nodeHeight);
         }}
-        onDragEnd={(e) => { }}
-      />
+        onDragEnd={(e) => { }} />
       {isSelected && (
         <Transformer
           ref={mainImageTransformRef}
           anchorSize={5}
           borderDash={[ 6, 2 ]}
-          enabledAnchors={[ 'top-left', 'top-right', 'bottom-left', 'bottom-right' ]}
+          enabledAnchors={[ "top-left", "top-right", "bottom-left", "bottom-right" ]}
           rotateEnabled={false}
-          boundBoxFunc={(oldBox, newBox) => (newBox.width < 5 || newBox.height < 5) ? oldBox : newBox}
-        />
+          boundBoxFunc={(oldBox, newBox) => ((newBox.width < 5 || newBox.height < 5) ? oldBox : newBox)} />
       )}
     </>
   );
 };
 
-const BackgroundImage = ({ selectedBackgroundIndex, backgroundImageRef, setIsSelected }) => {
-  const [ image ] = useImage("http://localhost:3000/" + BACKGROUNDS[ selectedBackgroundIndex ]);
+const BackgroundImage = ({
+  selectedBackgroundIndex, backgroundImageRef, setIsSelected
+}) => {
+  const [ image ] = useImage(`${window.location.origin}/${BACKGROUNDS[selectedBackgroundIndex]}`);
 
   useEffect(() => {
     if (backgroundImageRef.current && image) {
       const img = new window.Image();
-      img.src = BACKGROUNDS[ selectedBackgroundIndex ];
+      img.src = BACKGROUNDS[selectedBackgroundIndex];
       img.onload = () => {
         const imageNode = backgroundImageRef.current;
-        imageNode.width(img.width);
-        imageNode.height(img.height);
+        // imageNode.width(img.width);
+        imageNode.width(CANVAS_SIZE);
+        // imageNode.height(img.height);
+        imageNode.height(CANVAS_SIZE);
 
-        const scaleX = CANVAS_SIZE / img.width;
-        const scaleY = CANVAS_SIZE / img.height;
+        const scaleX = 1;
+        // const scaleX = CANVAS_SIZE / img.width;
+        const scaleY = 1;
+        // const scaleY = CANVAS_SIZE / img.height;
         const scale = Math.min(scaleX, scaleY);
         imageNode.scaleX(scale);
         imageNode.scaleY(scale);
@@ -365,13 +408,14 @@ const BackgroundImage = ({ selectedBackgroundIndex, backgroundImageRef, setIsSel
       <KonvaImage
         onClick={() => setIsSelected(false)}
         image={image}
-        ref={backgroundImageRef}
-      />
+        ref={backgroundImageRef} />
     </>
   );
 };
 
-const ResizableText = ({ inputText, textColor, textTransformRef, isSelected, setIsSelected }) => {
+const ResizableText = ({
+  inputText, textColor, textTransformRef, isSelected, setIsSelected
+}) => {
   const textRef = useRef(null);
 
   useEffect(() => {
@@ -400,8 +444,8 @@ const ResizableText = ({ inputText, textColor, textTransformRef, isSelected, set
         fill={textColor}
         ref={textRef}
         shadowForStrokeEnabled
-        fontStyle='bold'
-        align='center'
+        fontStyle="bold"
+        align="center"
         draggable
         onClick={() => setIsSelected(oldState => !oldState)}
         shadowBlur={10}
@@ -423,17 +467,14 @@ const ResizableText = ({ inputText, textColor, textTransformRef, isSelected, set
           const newY = Math.max(0, Math.min(CANVAS_SIZE - node.height(), e.target.y()));
           node.x(newX);
           node.y(newY);
-        }}
-      />
+        }} />
       {isSelected && (
         <Transformer
           ref={textTransformRef}
-          enabledAnchors={[ 'top-left', 'top-right', 'bottom-left', 'bottom-right' ]}
+          enabledAnchors={[ "top-left", "top-right", "bottom-left", "bottom-right" ]}
           rotateEnabled={false}
           boundBoxFunc={(oldBox, newBox) =>
-            (newBox.width < 5 || newBox.height < 5) ? oldBox : newBox
-          }
-        />
+            ((newBox.width < 5 || newBox.height < 5) ? oldBox : newBox)} />
       )}
     </>
   );
