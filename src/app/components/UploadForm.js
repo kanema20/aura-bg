@@ -10,7 +10,29 @@ import useImage from "use-image";
 import { Stage, Layer, Image as KonvaImage, Transformer, Text as KonvaText } from "react-konva";
 import _ from "lodash";
 import Script from "next/script";
-import FILTER_OPTIONS from "./FILTER_OPTIONS";
+import ALL_FILTER_OPTIONS from "./FILTER_OPTIONS";
+
+const SELECTED_FILTERS = [
+  "No Filter",
+  "Displacement",
+  "Dark Aura",
+  "Evening Hues",
+  "Mystic",
+  "Red Glitters",
+  "Emerald Shift",
+  "Blue Mood",
+  "Coral Reef"
+];
+
+const FILTER_OPTIONS = _(ALL_FILTER_OPTIONS)
+  .filter((option) => _.includes(SELECTED_FILTERS, option.label))
+  .thru(arr =>
+    _.concat([ {
+      label: "No Filter",
+      value: ""
+    } ], arr)
+  )
+  .value();
 
 
 const BACKGROUNDS = [
@@ -37,7 +59,7 @@ const INITIALS = {
   textColor: "#18ff00",
   inputText: "+ 664,569 aura",
   selectedBackgroundIndex: "0",
-  imageFilter: "offset"
+  imageFilter: ""
 };
 
 const getBase64 = (file) =>
@@ -51,7 +73,7 @@ const getBase64 = (file) =>
 export default function UploadForm() {
   const [ image, setImage ] = useState(null);
   const [ resultImageUrl, setResultImageUrl ] = useState("");
-  // const [ resultImageUrl, setResultImageUrl ] = useState("0bd2eec1-b264-4dae-aeaa-90ae5e5890a8___photo_2024-07-27_16-39-37.jpg");
+  // const [ resultImageUrl, setResultImageUrl ] = useState("34e8cf0a-9441-491a-8c6b-5d92ac1f0fb1___photo_2024-07-27_16-26-46.jpg");
   const [ origFileName, setOrigFileName ] = useState("");
   const [ selectedBackgroundIndex, setSelectedBackgroundIndex ] = useState("0");
   const [ previewOpen, setPreviewOpen ] = useState(false);
@@ -60,6 +82,7 @@ export default function UploadForm() {
   const [ inputText, setInputText ] = useState("+ 664,569 aura");
   const [ textColor, setTextColor ] = useState(INITIALS.textColor);
   const [ imageFilter, setImageFilter ] = useState(INITIALS.imageFilter);
+  const [ pixelsJsLoaded, setPixelsJsLoaded ] = useState(false);
   const [ form ] = Form.useForm();
 
   const stageRef = useRef(null);
@@ -152,9 +175,11 @@ export default function UploadForm() {
         src="https://cdn.jsdelivr.net/gh/silvia-odwyer/pixels.js@0.8.1/dist/Pixels.js"
         strategy="lazyOnload"
         onLoad={() => {
+          setPixelsJsLoaded(true);
           console.info("Script loaded successfully");
         }}
         onError={(e) => {
+          setPixelsJsLoaded(false);
           console.error("Script failed to load", e);
         }} />
 
@@ -311,6 +336,7 @@ export default function UploadForm() {
                   selectedBackgroundIndex={selectedBackgroundIndex}
                   backgroundImageRef={backgroundImageRef} />
                 <MainImage
+                  pixelsJsLoaded={pixelsJsLoaded}
                   imageFilter={imageFilter}
                   resultImageUrl={resultImageUrl}
                   mainImageRef={mainImageRef}
@@ -344,13 +370,13 @@ export default function UploadForm() {
 }
 
 const MainImage = ({
-  resultImageUrl, mainImageRef, isSelected, setIsSelected, mainImageTransformRef, imageFilter
+  resultImageUrl, mainImageRef, isSelected, setIsSelected, mainImageTransformRef, imageFilter, pixelsJsLoaded
 }) => {
   const fullUrl = resultImageUrl ? `${window.location.origin}/uploads/${resultImageUrl}` : null;
   const [ image ] = useImage(fullUrl);
 
   useEffect(() => {
-    if (!mainImageRef.current || !image || !window.pixelsJS) return;
+    if (!mainImageRef.current || !image || !pixelsJsLoaded) return;
     const img = new window.Image();
     img.src = fullUrl;
 
@@ -385,7 +411,7 @@ const MainImage = ({
         imageNode.getLayer().batchDraw();
       };
     };
-  }, [ resultImageUrl ]);
+  }, [ resultImageUrl, fullUrl, image, pixelsJsLoaded ]);
 
 
   useEffect(() => {
@@ -520,7 +546,7 @@ const ResizableText = ({
     const textWidth = textNode.width();
     textNode.x((CANVAS_SIZE - textWidth) / 2);
     textNode.y(CANVAS_SIZE - textNode.height() - TEXT_BOTTOM_PADDING);
-  }, [ ]);
+  }, []);
 
   if (!inputText) return null;
 
