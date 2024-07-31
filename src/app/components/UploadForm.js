@@ -374,6 +374,7 @@ const MainImage = ({
         const scaleX = CANVAS_SIZE / filteredImg.width;
         const scaleY = CANVAS_SIZE / filteredImg.height;
         const scale = Math.min(scaleX, scaleY);
+        imageNode.cache();
         imageNode.image(filteredImg);
         imageNode.scaleX(scale);
         imageNode.scaleY(scale);
@@ -384,7 +385,35 @@ const MainImage = ({
         imageNode.getLayer().batchDraw();
       };
     };
-  }, [ resultImageUrl, imageFilter, window.pixelsJS ]);
+  }, [ resultImageUrl ]);
+
+
+  useEffect(() => {
+    if (!mainImageRef.current || !image || !window.pixelsJS) return;
+    const img = new window.Image();
+    img.src = fullUrl;
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      context.drawImage(img, 0, 0);
+
+      const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const newImgData = window.pixelsJS?.filterImgData(imgData, imageFilter);
+      context.putImageData(newImgData, 0, 0);
+
+      const filteredImg = new window.Image();
+      filteredImg.src = canvas.toDataURL();
+
+      filteredImg.onload = () => {
+        const imageNode = mainImageRef.current;
+        imageNode.image(filteredImg);
+        imageNode.getLayer().batchDraw();
+      };
+    };
+  }, [ imageFilter, window.pixelsJS ]);
 
 
   if (!resultImageUrl) return null;
@@ -486,13 +515,12 @@ const ResizableText = ({
   }, [ isSelected, textTransformRef, textRef ]);
 
   useEffect(() => {
-    if (textRef.current) {
-      const textNode = textRef.current;
-      const textWidth = textNode.width();
-      textNode.x((CANVAS_SIZE - textWidth) / 2);
-      textNode.y(CANVAS_SIZE - textNode.height() - TEXT_BOTTOM_PADDING);
-    }
-  }, [ inputText, textColor ]);
+    if (!textRef.current) return;
+    const textNode = textRef.current;
+    const textWidth = textNode.width();
+    textNode.x((CANVAS_SIZE - textWidth) / 2);
+    textNode.y(CANVAS_SIZE - textNode.height() - TEXT_BOTTOM_PADDING);
+  }, [ ]);
 
   if (!inputText) return null;
 

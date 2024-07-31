@@ -120,5 +120,5 @@ a {
 }
 
 .ant-upload-list-item.ant-upload-list-item-done {
-  display: none;
+  display: none !important;
 }
