@@ -18,6 +18,7 @@ const SELECTED_FILTERS = [
   "Dark Aura",
   "Evening Hues",
   "Mystic",
+  "Saturation Fix",
   "Red Glitters",
   "Emerald Shift",
   "Blue Mood",
