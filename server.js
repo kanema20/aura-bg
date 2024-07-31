@@ -91,10 +91,11 @@ nextApp.prepare()
     app.get("*", (req, res) => {
       return handle(req, res);
     });
+    const PORT =  process.env.NODE_ENV === "development" ? 3000 : 80;
 
-    app.listen(3000, (err) => {
+    app.listen(PORT, (err) => {
       if (err) throw err;
-      console.log("> Ready on http://localhost:3000");
+      console.log(`> Ready on http://127.0.0.1:${PORT}`);
     });
   })
   .catch((ex) => {
