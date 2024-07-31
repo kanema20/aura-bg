@@ -50,6 +50,7 @@ nextApp.prepare()
     const app = express();
     app.use(cors({ origin: uiAddress }));
 
+    app.use(express.static("public"));
 
 
     // File upload endpoint
