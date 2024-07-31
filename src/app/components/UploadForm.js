@@ -32,6 +32,7 @@ const FILTER_OPTIONS = _(ALL_FILTER_OPTIONS)
       value: ""
     } ], arr)
   )
+  .sortBy(item => _.findIndex(SELECTED_FILTERS, sub => sub === item.label))
   .value();
 
 
