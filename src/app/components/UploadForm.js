@@ -53,9 +53,7 @@ export default function UploadForm() {
   const [ isSelected, setIsSelected ] = useState(false);
   const [ inputText, setInputText ] = useState("+ 664,569 AURA");
   const [ textColor, setTextColor ] = useState("#1677FF");
-  console.log("textColor ", textColor);
   const [ form ] = Form.useForm();
-  console.log("form ", form);
 
   const stageRef = useRef(null);
   const mainImageRef = useRef(null);
@@ -174,7 +172,6 @@ export default function UploadForm() {
                 onChange={(info) => {
                   const { status } = info.file;
                   if (status !== "uploading") {
-                    console.log("status ", status);
                   }
                   if (status === "done") {
                     setPreviewImage(info.file.response.data.origFileName);
