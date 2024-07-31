@@ -3,12 +3,14 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import axios from "axios";
-import { Button, Checkbox, Form, Image, Row, Col, Radio, message, Upload, Input, ColorPicker } from "antd";
+import { Button, Checkbox, Form, Image, Row, Col, Radio, message, Upload, Input, ColorPicker, Select } from "antd";
 import { FileImageOutlined, SaveOutlined } from "@ant-design/icons";
 import Dragger from "antd/es/upload/Dragger";
 import useImage from "use-image";
 import { Stage, Layer, Image as KonvaImage, Transformer, Text as KonvaText } from "react-konva";
 import _ from "lodash";
+import Script from "next/script";
+import FILTER_OPTIONS from "./FILTER_OPTIONS";
 
 
 const BACKGROUNDS = [
@@ -27,15 +29,15 @@ const BACKGROUNDS = [
   "/images/aura-bg/12.jpg"
 ];
 Konva.Filters;
-console.log("Konva.Filters ", Konva.Filters);
 const BRIGHTNESS = -0.1;
 const ENHANCE = -0.1;
 const CANVAS_SIZE = 600;
 const TEXT_BOTTOM_PADDING = 50;
 const INITIALS = {
   textColor: "#1677FF",
-  inputText: "+ 664,569 AURA",
-  selectedBackgroundIndex: "0"
+  inputText: "+ 664,569 aura",
+  selectedBackgroundIndex: "0",
+  imageFilter: "offset"
 };
 
 const getBase64 = (file) =>
@@ -55,8 +57,9 @@ export default function UploadForm() {
   const [ previewOpen, setPreviewOpen ] = useState(false);
   const [ previewImage, setPreviewImage ] = useState("");
   const [ isSelected, setIsSelected ] = useState(false);
-  const [ inputText, setInputText ] = useState("+ 664,569 AURA");
+  const [ inputText, setInputText ] = useState("+ 664,569 aura");
   const [ textColor, setTextColor ] = useState("#53E526");
+  const [ imageFilter, setImageFilter ] = useState("offset");
   const [ form ] = Form.useForm();
 
   const stageRef = useRef(null);
@@ -67,7 +70,7 @@ export default function UploadForm() {
 
   const handleExport = useCallback(() => {
     const uri = stageRef.current.toDataURL();
-    downloadURI(uri, `AURA__${(new Date()).getTime()}.png`);
+    downloadURI(uri, `aura__${(new Date()).getTime()}.png`);
   }, [ stageRef ]);
 
   const downloadURI = useCallback((uri, name) => {
@@ -89,22 +92,27 @@ export default function UploadForm() {
     setIsSelected(false);
     setInputText(INITIALS.inputText);
     setTextColor(INITIALS.textColor);
+    setImageFilter(INITIALS.imageFilter);
     form.setFieldsValue({
       selectedBackgroundIndex: INITIALS.selectedBackgroundIndex,
       inputText: INITIALS.inputText,
-      inputColor: INITIALS.textColor
+      inputColor: INITIALS.textColor,
+      filterImage: INITIALS.imageFilter
     });
   }, [ form ]);
   const handleRandomize = useCallback(() => {
     setSelectedBackgroundIndex(_.random(0, BACKGROUNDS.length - 1).toString());
-    const randomInput = `+ ${_.random(100, 999)},${_.random(100, 999)} AURA`;
+    const randomInput = `+ ${_.random(100, 999)},${_.random(100, 999)} aura`;
     setInputText(randomInput);
     const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-    setTextColor(randomColor);
+    // setTextColor(randomColor);
+    const randomImageFilter = _.sample(FILTER_OPTIONS).value;
+    setImageFilter(randomImageFilter);
     form.setFieldsValue({
       selectedBackgroundIndex: _.random(0, BACKGROUNDS.length - 1).toString(),
       inputText: randomInput,
-      inputColor: randomColor
+      inputColor: randomColor,
+      filterImage: randomImageFilter
     });
   }, [ form ]);
 
@@ -138,205 +146,241 @@ export default function UploadForm() {
   };
 
   return (
-    <Row gutter={16}>
-      <Col span={8}>
-        <Form
-          form={form}
-          name="basic"
-          layout="vertical"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
-          style={{ maxWidth: CANVAS_SIZE }}
-          initialValues={{ remember: true }}
-          autoComplete="off">
-          <Form.Item
+    <>
+
+      <Script
+        src="https://cdn.jsdelivr.net/gh/silvia-odwyer/pixels.js@0.8.1/dist/Pixels.js"
+        strategy="lazyOnload"
+        onLoad={() => {
+          console.info("Script loaded successfully");
+        }}
+        onError={(e) => {
+          console.error("Script failed to load", e);
+        }} />
+
+      <Row gutter={16}>
+        <Col span={8}>
+          <Form
+            form={form}
+            name="basic"
             layout="vertical"
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-            label="Upload your avatar or pp"
-            name="image">
-            <div className="flex">
-              {previewImage && (
-                <Image
-                  wrapperStyle={{ display: "none" }}
-                  preview={{
-                    visible: previewOpen,
-                    onVisibleChange: (visible) => setPreviewOpen(visible),
-                    afterOpenChange: (visible) => !visible && setPreviewImage("")
-                  }}
-                  className="h-full max-w-[100px] object-cover"
-                  src={`/uploads/${previewImage}`} />
-              )}
-              <Dragger
-                className="grow w-full"
-                name="image"
-                onPreview={handlePreview}
-                multiple={false}
-                action={`${process.env.NEXT_PUBLIC_API_ADDRESS}/upload`}
-                onChange={(info) => {
-                  const { status } = info.file;
-                  if (status !== "uploading") {
-                    console.info("status ", status);
-                  }
-                  if (status === "done") {
-                    setPreviewImage(info.file.response.data.origFileName);
-                    setResultImageUrl(info.file.response.data.imageUrl);
-                    message.success(`${info.file.name} file uploaded successfully.`);
-                  }
-                  else if (status === "error") {
-                    message.error(`${info.file.name} file upload failed.`);
-                  }
-                }}>
-                <p className="ant-upload-drag-icon">
-                  <FileImageOutlined />
-                </p>
-                <p className="ant-upload-text">Click or drag file to this area to upload</p>
-              </Dragger>
-            </div>
-          </Form.Item>
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+            style={{ maxWidth: CANVAS_SIZE }}
+            initialValues={{ remember: true }}
+            autoComplete="off">
+            <Form.Item
+              layout="vertical"
+              labelCol={{ span: 24 }}
+              wrapperCol={{ span: 24 }}
+              label="Upload your avatar or pp"
+              name="image">
+              <div className="flex">
+                {previewImage && (
+                  <Image
+                    wrapperStyle={{ display: "none" }}
+                    preview={{
+                      visible: previewOpen,
+                      onVisibleChange: (visible) => setPreviewOpen(visible),
+                      afterOpenChange: (visible) => !visible && setPreviewImage("")
+                    }}
+                    className="h-full max-w-[100px] object-cover"
+                    src={`/uploads/${previewImage}`} />
+                )}
+                <Dragger
+                  className="grow w-full"
+                  name="image"
+                  onPreview={handlePreview}
+                  multiple={false}
+                  action={`${process.env.NEXT_PUBLIC_API_ADDRESS}/upload`}
+                  onChange={(info) => {
+                    const { status } = info.file;
+                    if (status !== "uploading") {
+                      console.info("status ", status);
+                    }
+                    if (status === "done") {
+                      setPreviewImage(info.file.response.data.origFileName);
+                      setResultImageUrl(info.file.response.data.imageUrl);
+                      message.success(`${info.file.name} file uploaded successfully.`);
+                    }
+                    else if (status === "error") {
+                      message.error(`${info.file.name} file upload failed.`);
+                    }
+                  }}>
+                  <p className="ant-upload-drag-icon">
+                    <FileImageOutlined />
+                  </p>
+                  <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                </Dragger>
+              </div>
+            </Form.Item>
 
-          <Form.Item
-            label="Aura Backgrounds"
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-            initialValue={String(selectedBackgroundIndex)}>
-            <Radio.Group
-              value={String(selectedBackgroundIndex)}
-              className="flex flex-wrap">
-              {_.map(BACKGROUNDS, (bg, index) => (
-                <Radio
-                  key={index}
-                  onChange={e => {
-                    setSelectedBackgroundIndex(e.target.value);
-                    form.setFieldsValue({ selectedBackgroundIndex: e.target.value });
-                  }}
-                  value={String(index)}>
-                  <Image width={32} src={bg} />
-                </Radio>
-              ))}
-            </Radio.Group>
-          </Form.Item>
+            <Form.Item
+              label="Aura Backgrounds"
+              labelCol={{ span: 24 }}
+              wrapperCol={{ span: 24 }}
+              initialValue={String(selectedBackgroundIndex)}>
+              <Radio.Group
+                value={String(selectedBackgroundIndex)}
+                className="flex flex-wrap">
+                {_.map(BACKGROUNDS, (bg, index) => (
+                  <Radio
+                    key={index}
+                    onChange={e => {
+                      setSelectedBackgroundIndex(e.target.value);
+                      form.setFieldsValue({ selectedBackgroundIndex: e.target.value });
+                    }}
+                    value={String(index)}>
+                    <Image width={32} src={bg} />
+                  </Radio>
+                ))}
+              </Radio.Group>
+            </Form.Item>
 
-          <Row gutter={10}>
-            <Col span={16}>
-              <Form.Item
-                labelCol={{ span: 24 }}
-                label="Text to add"
-                initialValue={inputText}
-                shouldUpdate={(prevValues, curValues) => inputText !== curValues.inputText}
-                name="inputText"
-                wrapperCol={{ span: 24 }}>
-                <Input
+
+            <Form.Item
+              name="filterImage"
+              label="Avatar Filters"
+              labelCol={{ span: 24 }}
+              wrapperCol={{ span: 24 }}
+              initialValue={imageFilter}>
+              <Select
+                defaultValue={imageFilter}
+                onChange={setImageFilter}
+                options={FILTER_OPTIONS} />
+            </Form.Item>
+
+
+            <Row gutter={10}>
+              <Col span={16}>
+                <Form.Item
+                  labelCol={{ span: 24 }}
+                  label="Text to add"
+                  initialValue={inputText}
+                  shouldUpdate={(prevValues, curValues) => inputText !== curValues.inputText}
                   name="inputText"
-                  value={inputText}
-                  onChange={(e) => {
-                    setInputText(e.target.value);
-                    form.setFieldValue("inputText", e.target.value);
+                  wrapperCol={{ span: 24 }}>
+                  <Input
+                    name="inputText"
+                    value={inputText}
+                    onChange={(e) => {
+                      setInputText(e.target.value);
+                      form.setFieldValue("inputText", e.target.value);
+                    }} />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <ColorPicker
+                  className="mt-[30px]"
+                  name="inputColor"
+                  showText
+                  defaultFormat="hex"
+                  disabledAlpha
+                  value={textColor}
+                  onChangeComplete={color => {
+                    setTextColor(color.toHexString());
                   }} />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <ColorPicker
-                className="mt-[30px]"
-                name="inputColor"
-                showText
-                defaultFormat="hex"
-                disabledAlpha
-                value={textColor}
-                onChangeComplete={color => {
-                  setTextColor(color.toHexString());
-                }} />
-            </Col>
-          </Row>
-        </Form>
+              </Col>
+            </Row>
+          </Form>
 
-        <div className="flex items-center justify-center w-full">
-          <Button
-            onClick={handleReset}
-            className="grow"
-            size="large">RESET</Button>
-          <Button
-            onClick={handleRandomize}
-            className="grow"
-            size="large">RANDOMIZE</Button>
-
-        </div>
-      </Col>
-
-      <Col span={16}>
-        <div className="flex flex-col items-end">
-          <Stage id="stage" width={CANVAS_SIZE} height={CANVAS_SIZE}
-            ref={stageRef}>
-            <Layer>
-              <BackgroundImage
-                setIsSelected={setIsSelected}
-                selectedBackgroundIndex={selectedBackgroundIndex}
-                backgroundImageRef={backgroundImageRef} />
-              <MainImage
-                resultImageUrl={resultImageUrl}
-                mainImageRef={mainImageRef}
-                isSelected={isSelected}
-                setIsSelected={setIsSelected}
-                mainImageTransformRef={mainImageTransformRef} />
-              <ResizableText
-                inputText={inputText}
-                textColor={textColor}
-                textTransformRef={textTransformRef}
-                isSelected={isSelected}
-                setIsSelected={setIsSelected} />
-            </Layer>
-          </Stage>
-          <div className="flex justify-end mt-2">
+          <div className="flex items-center justify-center w-full">
             <Button
-              onClick={handleExport}
-              className="px-10"
-              disabled={!resultImageUrl}
-              size="large"
-              color="primary"
-              icon={<SaveOutlined />}>
-              SAVE IMAGE
-            </Button>
+              onClick={handleReset}
+              className="grow"
+              size="large">RESET</Button>
+            <Button
+              onClick={handleRandomize}
+              className="grow"
+              size="large">RANDOMIZE</Button>
+
           </div>
-        </div>
-      </Col>
-    </Row>
+        </Col>
+
+        <Col span={16}>
+          <div className="flex flex-col items-end">
+            <Stage id="stage" width={CANVAS_SIZE} height={CANVAS_SIZE}
+              ref={stageRef}>
+              <Layer>
+                <BackgroundImage
+                  setIsSelected={setIsSelected}
+                  selectedBackgroundIndex={selectedBackgroundIndex}
+                  backgroundImageRef={backgroundImageRef} />
+                <MainImage
+                  imageFilter={imageFilter}
+                  resultImageUrl={resultImageUrl}
+                  mainImageRef={mainImageRef}
+                  isSelected={isSelected}
+                  setIsSelected={setIsSelected}
+                  mainImageTransformRef={mainImageTransformRef} />
+                <ResizableText
+                  inputText={inputText}
+                  textColor={textColor}
+                  textTransformRef={textTransformRef}
+                  isSelected={isSelected}
+                  setIsSelected={setIsSelected} />
+              </Layer>
+            </Stage>
+            <div className="flex justify-end mt-2">
+              <Button
+                onClick={handleExport}
+                className="px-10"
+                disabled={!resultImageUrl}
+                size="large"
+                color="primary"
+                icon={<SaveOutlined />}>
+                SAVE IMAGE
+              </Button>
+            </div>
+          </div>
+        </Col>
+      </Row>
+    </>
   );
 }
 
 const MainImage = ({
-  resultImageUrl, mainImageRef, isSelected, setIsSelected, mainImageTransformRef
+  resultImageUrl, mainImageRef, isSelected, setIsSelected, mainImageTransformRef, imageFilter
 }) => {
   const fullUrl = resultImageUrl ? `${window.location.origin}/uploads/${resultImageUrl}` : null;
   const [ image ] = useImage(fullUrl);
 
   useEffect(() => {
-    if (!mainImageRef.current && !image) return;
+    if (!mainImageRef.current || !image || !window.pixelsJS) return;
     const img = new window.Image();
     img.src = fullUrl;
 
     img.onload = () => {
-      const imageNode = mainImageRef.current;
-      const scaleX = CANVAS_SIZE / img.width;
-      const scaleY = CANVAS_SIZE / img.height;
-      const scale = Math.min(scaleX, scaleY);
-      const newWidth = img.width * scale;
-      const newHeight = img.height * scale;
-      const x = (CANVAS_SIZE - newWidth) / 2;
-      // const y = CANVAS_SIZE - newHeight;
-      imageNode.scaleX(Math.min(scaleX, scaleY));
-      imageNode.scaleY(Math.min(scaleX, scaleY));
-      // node.width(newWidth);
-      // node.height(newHeight);
-      // node.x(x);
-      // node.y(y);
-      imageNode.cache();
-      imageNode.filters([ Konva.Filters.Brighten, Konva.Filters.Enhance ]);
-      imageNode.brightness(BRIGHTNESS);
-      imageNode.enhance(ENHANCE);
-      imageNode.getLayer().batchDraw();
-    };
-  }, [ resultImageUrl ]);
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      context.drawImage(img, 0, 0);
 
+      const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const newImgData = window.pixelsJS?.filterImgData(imgData, imageFilter);
+      context.putImageData(newImgData, 0, 0);
+
+      const filteredImg = new window.Image();
+      filteredImg.src = canvas.toDataURL();
+
+      filteredImg.onload = () => {
+        const imageNode = mainImageRef.current;
+
+        const scaleX = CANVAS_SIZE / filteredImg.width;
+        const scaleY = CANVAS_SIZE / filteredImg.height;
+        const scale = Math.min(scaleX, scaleY);
+        imageNode.image(filteredImg);
+        imageNode.scaleX(scale);
+        imageNode.scaleY(scale);
+        imageNode.cache();
+        imageNode.filters([ Konva.Filters.Brighten, Konva.Filters.Enhance ]);
+        imageNode.brightness(BRIGHTNESS);
+        imageNode.enhance(ENHANCE);
+        imageNode.getLayer().batchDraw();
+      };
+    };
+  }, [ resultImageUrl, imageFilter, window.pixelsJS ]);
 
 
   if (!resultImageUrl) return null;
@@ -461,7 +505,8 @@ const ResizableText = ({
         draggable
         onClick={() => setIsSelected(oldState => !oldState)}
         shadowBlur={10}
-        shadowColor="rgba(255,255,255,1)"
+        // shadowColor="rgba(255,255,255,1)"
+        shadowColor="rgba(0,0,0,1)"
         shadowOffsetX={0}
         shadowOffsetY={0}
         onTransformEnd={(e) => {

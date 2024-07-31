@@ -5,7 +5,9 @@ import PageWrapper from "./page-wrapper";
 const Page = () => {
 
   return (
-    <PageWrapper />
+    <>
+      <PageWrapper />
+    </>
   );
 
 };
