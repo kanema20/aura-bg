@@ -34,7 +34,7 @@ const ENHANCE = -0.1;
 const CANVAS_SIZE = 600;
 const TEXT_BOTTOM_PADDING = 50;
 const INITIALS = {
-  textColor: "#1677FF",
+  textColor: "#18ff00",
   inputText: "+ 664,569 aura",
   selectedBackgroundIndex: "0",
   imageFilter: "offset"
@@ -50,16 +50,16 @@ const getBase64 = (file) =>
 
 export default function UploadForm() {
   const [ image, setImage ] = useState(null);
-  // const [ resultImageUrl, setResultImageUrl ] = useState("");
-  const [ resultImageUrl, setResultImageUrl ] = useState("0bd2eec1-b264-4dae-aeaa-90ae5e5890a8___photo_2024-07-27_16-39-37.jpg");
+  const [ resultImageUrl, setResultImageUrl ] = useState("");
+  // const [ resultImageUrl, setResultImageUrl ] = useState("0bd2eec1-b264-4dae-aeaa-90ae5e5890a8___photo_2024-07-27_16-39-37.jpg");
   const [ origFileName, setOrigFileName ] = useState("");
   const [ selectedBackgroundIndex, setSelectedBackgroundIndex ] = useState("0");
   const [ previewOpen, setPreviewOpen ] = useState(false);
   const [ previewImage, setPreviewImage ] = useState("");
   const [ isSelected, setIsSelected ] = useState(false);
   const [ inputText, setInputText ] = useState("+ 664,569 aura");
-  const [ textColor, setTextColor ] = useState("#53E526");
-  const [ imageFilter, setImageFilter ] = useState("offset");
+  const [ textColor, setTextColor ] = useState(INITIALS.textColor);
+  const [ imageFilter, setImageFilter ] = useState(INITIALS.imageFilter);
   const [ form ] = Form.useForm();
 
   const stageRef = useRef(null);
@@ -216,6 +216,7 @@ export default function UploadForm() {
             </Form.Item>
 
             <Form.Item
+              className="mt-5"
               label="Aura Backgrounds"
               labelCol={{ span: 24 }}
               wrapperCol={{ span: 24 }}
@@ -239,6 +240,7 @@ export default function UploadForm() {
 
 
             <Form.Item
+              className="mt-5"
               name="filterImage"
               label="Avatar Filters"
               labelCol={{ span: 24 }}
@@ -251,7 +253,9 @@ export default function UploadForm() {
             </Form.Item>
 
 
-            <Row gutter={10}>
+            <Row
+              className="mt-5"
+              gutter={10}>
               <Col span={16}>
                 <Form.Item
                   labelCol={{ span: 24 }}

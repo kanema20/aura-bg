@@ -118,3 +118,7 @@ a {
   border: 1px solid #696969;
   overflow: hidden;
 }
+
+.ant-upload-list-item.ant-upload-list-item-done {
+  display: none;
+}
