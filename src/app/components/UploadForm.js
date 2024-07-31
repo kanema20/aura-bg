@@ -172,6 +172,7 @@ export default function UploadForm() {
                 onChange={(info) => {
                   const { status } = info.file;
                   if (status !== "uploading") {
+                    console.info("status ", status);
                   }
                   if (status === "done") {
                     setPreviewImage(info.file.response.data.origFileName);
