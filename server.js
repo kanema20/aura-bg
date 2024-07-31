@@ -104,23 +104,3 @@ nextApp.prepare()
     process.exit(1);
   });
 
-
-
-// Serve uploaded files statically
-// app.use('/public/uploads', express.static(path.join(__dirname, 'public/uploads')));
-
-//
-// app.get('/file/:filename', (req, res) => {
-//   const filename = req.params.filename;
-//   const filePath = path.join(__dirname, 'uploads', filename);
-
-//   if (fs.existsSync(filePath)) {
-//     res.sendFile(filePath);
-//   } else {
-//     res.status(404).send('File not found');
-//   }
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`Server is running on http://localhost:${PORT}`);
-// });

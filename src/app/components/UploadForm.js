@@ -387,9 +387,11 @@ const MainImage = ({
       canvas.height = img.height;
       context.drawImage(img, 0, 0);
 
-      const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const newImgData = window.pixelsJS?.filterImgData(imgData, imageFilter);
-      context.putImageData(newImgData, 0, 0);
+      let imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+      if (imageFilter) {
+        imgData = window.pixelsJS?.filterImgData(imgData, imageFilter);
+      }
+      context.putImageData(imgData, 0, 0);
 
       const filteredImg = new window.Image();
       filteredImg.src = canvas.toDataURL();
@@ -411,11 +413,11 @@ const MainImage = ({
         imageNode.getLayer().batchDraw();
       };
     };
-  }, [ resultImageUrl, fullUrl, image, pixelsJsLoaded ]);
+  }, [ resultImageUrl, fullUrl, image, pixelsJsLoaded, imageFilter ]);
 
 
   useEffect(() => {
-    if (!mainImageRef.current || !image || !window.pixelsJS) return;
+    if (!mainImageRef.current || !image || !pixelsJsLoaded) return;
     const img = new window.Image();
     img.src = fullUrl;
 
@@ -426,9 +428,11 @@ const MainImage = ({
       canvas.height = img.height;
       context.drawImage(img, 0, 0);
 
-      const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const newImgData = window.pixelsJS?.filterImgData(imgData, imageFilter);
-      context.putImageData(newImgData, 0, 0);
+      let imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+      if (imageFilter) {
+        imgData = window.pixelsJS?.filterImgData(imgData, imageFilter);
+      }
+      context.putImageData(imgData, 0, 0);
 
       const filteredImg = new window.Image();
       filteredImg.src = canvas.toDataURL();
@@ -439,7 +443,7 @@ const MainImage = ({
         imageNode.getLayer().batchDraw();
       };
     };
-  }, [ imageFilter, window.pixelsJS ]);
+  }, [ imageFilter, pixelsJsLoaded ]);
 
 
   if (!resultImageUrl) return null;
