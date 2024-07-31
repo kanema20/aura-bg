@@ -26,7 +26,10 @@ const BACKGROUNDS = [
   "/images/aura-bg/11.jpg",
   "/images/aura-bg/12.jpg"
 ];
-
+Konva.Filters;
+console.log("Konva.Filters ", Konva.Filters);
+const BRIGHTNESS = -0.1;
+const ENHANCE = -0.1;
 const CANVAS_SIZE = 600;
 const TEXT_BOTTOM_PADDING = 50;
 const INITIALS = {
@@ -45,14 +48,15 @@ const getBase64 = (file) =>
 
 export default function UploadForm() {
   const [ image, setImage ] = useState(null);
-  const [ resultImageUrl, setResultImageUrl ] = useState("");
+  // const [ resultImageUrl, setResultImageUrl ] = useState("");
+  const [ resultImageUrl, setResultImageUrl ] = useState("0bd2eec1-b264-4dae-aeaa-90ae5e5890a8___photo_2024-07-27_16-39-37.jpg");
   const [ origFileName, setOrigFileName ] = useState("");
   const [ selectedBackgroundIndex, setSelectedBackgroundIndex ] = useState("0");
   const [ previewOpen, setPreviewOpen ] = useState(false);
   const [ previewImage, setPreviewImage ] = useState("");
   const [ isSelected, setIsSelected ] = useState(false);
   const [ inputText, setInputText ] = useState("+ 664,569 AURA");
-  const [ textColor, setTextColor ] = useState("#1677FF");
+  const [ textColor, setTextColor ] = useState("#53E526");
   const [ form ] = Form.useForm();
 
   const stageRef = useRef(null);
@@ -311,7 +315,7 @@ const MainImage = ({
     img.src = fullUrl;
 
     img.onload = () => {
-      const node = mainImageRef.current;
+      const imageNode = mainImageRef.current;
       const scaleX = CANVAS_SIZE / img.width;
       const scaleY = CANVAS_SIZE / img.height;
       const scale = Math.min(scaleX, scaleY);
@@ -319,13 +323,17 @@ const MainImage = ({
       const newHeight = img.height * scale;
       const x = (CANVAS_SIZE - newWidth) / 2;
       // const y = CANVAS_SIZE - newHeight;
-      node.scaleX(Math.min(scaleX, scaleY));
-      node.scaleY(Math.min(scaleX, scaleY));
+      imageNode.scaleX(Math.min(scaleX, scaleY));
+      imageNode.scaleY(Math.min(scaleX, scaleY));
       // node.width(newWidth);
       // node.height(newHeight);
       // node.x(x);
       // node.y(y);
-      node.getLayer().batchDraw();
+      imageNode.cache();
+      imageNode.filters([ Konva.Filters.Brighten, Konva.Filters.Enhance ]);
+      imageNode.brightness(BRIGHTNESS);
+      imageNode.enhance(ENHANCE);
+      imageNode.getLayer().batchDraw();
     };
   }, [ resultImageUrl ]);
 
@@ -395,8 +403,14 @@ const BackgroundImage = ({
         const scaleY = 1;
         // const scaleY = CANVAS_SIZE / img.height;
         const scale = Math.min(scaleX, scaleY);
+        imageNode.cache();
         imageNode.scaleX(scale);
         imageNode.scaleY(scale);
+        imageNode.cache();
+        imageNode.filters([ Konva.Filters.Brighten, Konva.Filters.Enhance ]);
+        imageNode.brightness(BRIGHTNESS);
+        imageNode.enhance(ENHANCE);
+        imageNode.getLayer().batchDraw();
       };
     }
   }, [ image, selectedBackgroundIndex ]);
