@@ -12,7 +12,7 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "lint:commit": "next lint --quiet",
-    "release": "yarn build && yarn start:prod"
+    "release": "yarn build && pm2 stop aura-bg &&  yarn start:prod"
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
