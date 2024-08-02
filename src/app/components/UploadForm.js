@@ -213,6 +213,7 @@ export default function UploadForm({ mode }) {
             autoComplete="off">
             <Row>
               <Form.Item
+                style={{ width: "100%" }}
                 layout="vertical"
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
@@ -220,6 +221,7 @@ export default function UploadForm({ mode }) {
                 name="image">
                 <div className="flex">
                   <Dragger
+                    rootClassName="uploader"
                     className="grow w-full"
                     name="image"
                     multiple={false}
@@ -248,7 +250,7 @@ export default function UploadForm({ mode }) {
                     <p className="ant-upload-drag-icon">
                       <FileImageOutlined />
                     </p>
-                    <p className="ant-upload-text">Click or drag your avatar to this area to upload</p>
+                    <p className="ant-upload-text">Upload Picture</p>
                   </Dragger>
                 </div>
               </Form.Item>
