@@ -116,7 +116,7 @@ export default function UploadForm({ mode }) {
     setInputPhrase(INITIALS.phraseText);
     setInputText(INITIALS.inputText);
     setTextColor(INITIALS.textColor);
-    setPhraseColor(INITIALS.textColor);
+    setPhraseColor(INITIALS.phraseColor);
     setImageFilter(INITIALS.imageFilter);
     form.setFieldsValue({
       selectedBackgroundIndex: INITIALS.selectedBackgroundIndex,
