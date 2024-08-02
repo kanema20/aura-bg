@@ -34,7 +34,7 @@ const PageWrapper = () => {
         ...THEME,
         algorithm: isDarkMode ? darkAlgorithm : defaultAlgorithm
       }}>
-      <Layout className="flex h-[100vh]">
+      <Layout className="flex min-h-[100vh]">
         <Header
           className={`w-full flex justify-between ${bgColor}`}>
           <div>
@@ -48,9 +48,7 @@ const PageWrapper = () => {
           </div>
         </Header>
         <Content className="grow p-4 my-5 flex justify-center">
-          <div className="max-w-[960px]">
-            <UploadForm />
-          </div>
+          <UploadForm />
         </Content>
         <Footer className={`pt-[10px] py-[10px] flex justify-center text-white opacity-50 ${bgColor}`}>
           <Text className="text-sm">Copyright by AURA</Text>

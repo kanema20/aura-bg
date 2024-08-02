@@ -185,8 +185,18 @@ export default function UploadForm() {
           console.error("Script failed to load", e);
         }} />
 
-      <Row gutter={16}>
-        <Col span={8}>
+      <Row
+        gutter={16}
+        align="top"
+        justify="center"
+        wrap>
+        <Col
+          className="mb-5"
+          xs={24}
+          sm={20}
+          md={14}
+          lg={10}
+          xl={10}>
           <Form
             form={form}
             name="basic"
@@ -328,8 +338,12 @@ export default function UploadForm() {
           </div>
         </Col>
 
-        <Col span={16}>
-          <div className="flex flex-col items-end">
+        <Col
+          sm={24}
+          md={20}
+          lg={14}
+          xl={12}>
+          <div className="flex flex-col items-center justify-center">
             <Stage id="stage" width={CANVAS_SIZE} height={CANVAS_SIZE}
               ref={stageRef}>
               <Layer>

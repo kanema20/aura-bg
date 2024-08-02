@@ -122,3 +122,11 @@ a {
 .ant-upload-list-item.ant-upload-list-item-done {
   display: none !important;
 }
+
+
+
+@media screen and (max-width: 640px) {
+  #stage {
+    transform: scale(0.8);
+  }
+}
