@@ -3,7 +3,6 @@ import PageWrapper from "./page-wrapper";
 
 
 const Page = ({ searchParams }) => {
-  console.log("searchParams ", searchParams);
   const mode = searchParams?.mode;
   return (
     <>
