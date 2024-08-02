@@ -69,8 +69,8 @@ export default function UploadForm({ mode }) {
   const [ originalImageUrl, setOriginalImageUrl ] = useState("");
   const [ selectedBackgroundIndex, setSelectedBackgroundIndex ] = useState("0");
   const [ editMode, setEditMode ] = useState(false);
-  const [ inputText, setInputText ] = useState("+ 664,569 aura");
-  const [ inputPhrase, setInputPhrase ] = useState(_.sample(AI_PHRASES));
+  const [ inputText, setInputText ] = useState(INITIALS.inputText);
+  const [ inputPhrase, setInputPhrase ] = useState(INITIALS.phraseText);
   const [ textColor, setTextColor ] = useState(INITIALS.textColor);
   const [ phraseColor, setPhraseColor ] = useState(INITIALS.phraseColor);
   const [ imageFilter, setImageFilter ] = useState(INITIALS.imageFilter);
@@ -111,7 +111,7 @@ export default function UploadForm({ mode }) {
     setOriginalImageUrl(null);
     setSelectedBackgroundIndex(INITIALS.selectedBackgroundIndex);
     setEditMode(false);
-    setInputPhrase(_.sample(AI_PHRASES));
+    setInputPhrase(INITIALS.phraseText);
     setInputText(INITIALS.inputText);
     setTextColor(INITIALS.textColor);
     setPhraseColor(INITIALS.textColor);
@@ -127,7 +127,7 @@ export default function UploadForm({ mode }) {
   }, [ form ]);
   const handleRandomize = useCallback(() => {
     setSelectedBackgroundIndex(_.random(0, BACKGROUND_IMAGES.length - 1).toString());
-    const randomInput = `+ ${_.random(100, 999)},${_.random(100, 999)} aura`;
+    const randomInput = `+ ${_.random(100, 999)}} aura`;
     setInputText(randomInput);
     const randomPhrase = _.sample(AI_PHRASES);
     setInputPhrase(randomPhrase);
@@ -209,62 +209,66 @@ export default function UploadForm({ mode }) {
             style={{ maxWidth: CANVAS_SIZE }}
             initialValues={{ remember: true }}
             autoComplete="off">
-            <Form.Item
-              layout="vertical"
-              labelCol={{ span: 24 }}
-              wrapperCol={{ span: 24 }}
-              // label="Upload your avatar or pp"
-              name="image">
-              <div className="flex">
-                <Dragger
-                  className="grow w-full"
-                  name="image"
-                  multiple={false}
-                  action={`${process.env.NEXT_PUBLIC_API_ADDRESS}/upload`}
-                  onChange={(info) => {
-                    const { status } = info.file;
-                    if (status !== "uploading") {
-                      console.info("status ", status);
-                    }
-                    if (status === "done") {
-                      setOriginalImageUrl(info.file.response.data.origFileName);
-                      setResultImageUrl(info.file.response.data.imageUrl);
-                      message.success(`${info.file.name} file uploaded successfully.`);
-                    }
-                    else if (status === "error") {
-                      message.error(`${info.file.name} file upload failed.`);
-                    }
-                  }}>
-                  <p className="ant-upload-drag-icon">
-                    <FileImageOutlined />
-                  </p>
-                  <p className="ant-upload-text">Click or drag your avatar to this area to upload</p>
-                </Dragger>
-              </div>
-            </Form.Item>
+            <Row>
+              <Form.Item
+                layout="vertical"
+                labelCol={{ span: 24 }}
+                wrapperCol={{ span: 24 }}
+                // label="Upload your avatar or pp"
+                name="image">
+                <div className="flex">
+                  <Dragger
+                    className="grow w-full"
+                    name="image"
+                    multiple={false}
+                    action={`${process.env.NEXT_PUBLIC_API_ADDRESS}/upload`}
+                    onChange={(info) => {
+                      const { status } = info.file;
+                      if (status !== "uploading") {
+                        console.info("status ", status);
+                      }
+                      if (status === "done") {
+                        setOriginalImageUrl(info.file.response.data.origFileName);
+                        setResultImageUrl(info.file.response.data.imageUrl);
+                        message.success(`${info.file.name} file uploaded successfully.`);
+                      }
+                      else if (status === "error") {
+                        message.error(`${info.file.name} file upload failed.`);
+                      }
+                    }}>
+                    <p className="ant-upload-drag-icon">
+                      <FileImageOutlined />
+                    </p>
+                    <p className="ant-upload-text">Click or drag your avatar to this area to upload</p>
+                  </Dragger>
+                </div>
+              </Form.Item>
+            </Row>
 
-            <Form.Item
-              className="mt-5"
-              label="Aura Backgrounds"
-              labelCol={{ span: 24 }}
-              wrapperCol={{ span: 24 }}
-              initialValue={String(selectedBackgroundIndex)}>
-              <Radio.Group
-                value={String(selectedBackgroundIndex)}
-                className="flex flex-wrap">
-                {_.map(BACKGROUND_IMAGES, (bg, index) => (
-                  <Radio
-                    key={index}
-                    onChange={e => {
-                      setSelectedBackgroundIndex(e.target.value);
-                      form.setFieldsValue({ selectedBackgroundIndex: e.target.value });
-                    }}
-                    value={String(index)}>
-                    <Image width={32} src={bg} />
-                  </Radio>
-                ))}
-              </Radio.Group>
-            </Form.Item>
+            {activeTab === MODES.pp && (
+              <Form.Item
+                className="mt-5"
+                label="Aura Backgrounds"
+                labelCol={{ span: 24 }}
+                wrapperCol={{ span: 24 }}
+                initialValue={String(selectedBackgroundIndex)}>
+                <Radio.Group
+                  value={String(selectedBackgroundIndex)}
+                  className="flex flex-wrap">
+                  {_.map(BACKGROUND_IMAGES, (bg, index) => (
+                    <Radio
+                      key={index}
+                      onChange={e => {
+                        setSelectedBackgroundIndex(e.target.value);
+                        form.setFieldsValue({ selectedBackgroundIndex: e.target.value });
+                      }}
+                      value={String(index)}>
+                      <Image width={32} src={bg} />
+                    </Radio>
+                  ))}
+                </Radio.Group>
+              </Form.Item>
+            )}
 
 
             <Form.Item
@@ -387,15 +391,17 @@ export default function UploadForm({ mode }) {
           sm={24}
           md={20}
           lg={14}
-          xl={12}>
+          xl={14}>
           <div className="flex flex-col items-center justify-center">
             <Stage id="stage" width={CANVAS_SIZE} height={CANVAS_SIZE}
               ref={stageRef}>
               <Layer>
-                <AuraBackgroundImageLayer
-                  setIsSelected={setEditMode}
-                  selectedBackgroundIndex={selectedBackgroundIndex}
-                  backgroundImageRef={backgroundImageRef} />
+                {activeTab === MODES.pp && (
+                  <AuraBackgroundImageLayer
+                    setIsSelected={setEditMode}
+                    selectedBackgroundIndex={selectedBackgroundIndex}
+                    backgroundImageRef={backgroundImageRef} />
+                )}
                 <AvatarImage
                   shadowEnabled={activeTab === MODES.profilePictureMaker}
                   pixelsJsLoaded={pixelsJsLoaded}
@@ -433,7 +439,7 @@ export default function UploadForm({ mode }) {
             <div className="flex justify-end mt-2">
               <Button
                 onClick={handleExport}
-                className="px-10"
+                className="px-20 mt-3"
                 size="large"
                 color="primary"
                 icon={<SaveOutlined />}>

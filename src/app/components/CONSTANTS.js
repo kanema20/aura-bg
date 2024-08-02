@@ -9,8 +9,9 @@ export const TEXT_BOTTOM_PADDING = 50;
 
 export const INITIALS = {
   phraseColor: "#ffffff",
+  phraseText: "believing in something:",
   textColor: "#18ff00",
-  inputText: "+ 664,569 aura",
+  inputText: "+777 aura",
   selectedBackgroundIndex: "0",
   imageFilter: "",
   enableDarkBackground: true

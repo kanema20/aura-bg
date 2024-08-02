@@ -46,8 +46,10 @@ const PageWrapper = ({ mode }) => {
               icon={isDarkMode ? <SunOutlined /> : <MoonOutlined />} />
           </div>
         </Header>
-        <Content className="grow p-4 my-5 flex flex-col items-center">
-          <UploadForm mode={mode} />
+        <Content className="grow p-4 my-5 flex flex-col items-center ">
+          <div className="w-full max-w-[1024px]">
+            <UploadForm mode={mode} />
+          </div>
         </Content>
         <Footer className={`pt-[10px] py-[10px] flex justify-center text-white opacity-50 ${bgColor}`}>
           <Text className="text-sm">Copyright by AURA</Text>
