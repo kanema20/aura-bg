@@ -4,12 +4,12 @@
 import { useEffect } from "react";
 import useImage from "use-image";
 import { Image as KonvaImage, Transformer } from "react-konva";
-import { BRIGHTNESS, ENHANCE, CANVAS_SIZE } from "./CONSTANTS";
+import { BRIGHTNESS, ENHANCE, CANVAS_WIDTH } from "./CONSTANTS";
 
 
 
 const AvatarImage = ({
-  resultImageUrl, mainImageRef, isSelected, setIsSelected, mainImageTransformRef, imageFilter, pixelsJsLoaded, shadowEnabled = false
+  resultImageUrl, mainImageRef, isSelected, setIsSelected, mainImageTransformRef, imageFilter, pixelsJsLoaded, shadowEnabled = false, canvasWidth = CANVAS_WIDTH, canvasHeight = CANVAS_WIDTH
 }) => {
   const fullUrl = resultImageUrl ? `${window.location.origin}/uploads/${resultImageUrl}` : null;
   const [ image ] = useImage(fullUrl);
@@ -38,8 +38,8 @@ const AvatarImage = ({
       filteredImg.onload = () => {
         const imageNode = mainImageRef.current;
 
-        const scaleX = CANVAS_SIZE / filteredImg.width;
-        const scaleY = CANVAS_SIZE / filteredImg.height;
+        const scaleX = canvasWidth / filteredImg.width;
+        const scaleY = canvasHeight / filteredImg.height;
         const scale = Math.min(scaleX, scaleY);
         imageNode.cache();
         imageNode.image(filteredImg);

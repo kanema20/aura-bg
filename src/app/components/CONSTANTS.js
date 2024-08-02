@@ -3,7 +3,7 @@ export const BRIGHTNESS = -0.1;
 
 export const ENHANCE = -0.1;
 
-export const CANVAS_SIZE = 600;
+export const CANVAS_WIDTH = 600;
 
 export const TEXT_BOTTOM_PADDING = 50;
 

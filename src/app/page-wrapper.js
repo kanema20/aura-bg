@@ -36,9 +36,18 @@ const PageWrapper = ({ mode }) => {
       <Layout className="flex min-h-[100vh]">
         <Header
           className={`w-full flex justify-between ${bgColor}`}>
-          <div>
+          <div className="flex items-center">
             <Avatar size="large" icon={<Image src={aura} />} />
-            <Text className="ml-1 text-xl">AURA</Text>
+            <h1
+              style={{fontWeight: "bold"}}
+              className="text-3xl ml-2 text-">
+              <span style={{
+                background: "lime",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "#0000",
+                textShadow: "0 0 1px lime, 0 0 1px lime, 0 0 1px lime, 0 0 3px #fff, 0 0 3px #fff, 0 0 30px #fff, 0 0 17px #fff, 0 0 20px #fff"
+              }}>aura</span> on sol
+            </h1>
           </div>
           <div>
             <Button

@@ -5,12 +5,12 @@ import { useEffect } from "react";
 import useImage from "use-image";
 import { Image as KonvaImage } from "react-konva";
 import BACKGROUND_IMAGES from "./BACKGROUND_IMAGES";
-import { BRIGHTNESS, ENHANCE, CANVAS_SIZE } from "./CONSTANTS";
+import { BRIGHTNESS, ENHANCE, CANVAS_WIDTH } from "./CONSTANTS";
 
 
 
 const AuraBackgroundImageLayer = ({
-  selectedBackgroundIndex, backgroundImageRef, setIsSelected
+  selectedBackgroundIndex, backgroundImageRef, setIsSelected, canvasWidth = CANVAS_WIDTH, canvasHeight = CANVAS_WIDTH
 }) => {
   const [ image ] = useImage(`${window.location.origin}/${BACKGROUND_IMAGES[selectedBackgroundIndex]}`);
 
@@ -21,14 +21,14 @@ const AuraBackgroundImageLayer = ({
       img.onload = () => {
         const imageNode = backgroundImageRef.current;
         // imageNode.width(img.width);
-        imageNode.width(CANVAS_SIZE);
+        imageNode.width(canvasWidth);
         // imageNode.height(img.height);
-        imageNode.height(CANVAS_SIZE);
+        imageNode.height(canvasHeight);
 
         const scaleX = 1;
-        // const scaleX = CANVAS_SIZE / img.width;
+        // const scaleX = CANVAS_WIDTH / img.width;
         const scaleY = 1;
-        // const scaleY = CANVAS_SIZE / img.height;
+        // const scaleY = CANVAS_WIDTH / img.height;
         const scale = Math.min(scaleX, scaleY);
         imageNode.cache();
         imageNode.scaleX(scale);

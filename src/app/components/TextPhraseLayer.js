@@ -3,12 +3,12 @@
 
 import { useRef, useEffect } from "react";
 import { Transformer, Text as KonvaText } from "react-konva";
-import { CANVAS_SIZE, TEXT_BOTTOM_PADDING } from "./CONSTANTS";
+import { CANVAS_WIDTH, TEXT_BOTTOM_PADDING } from "./CONSTANTS";
 
 
 
 const TextPhraseLayer = ({
-  inputText, textColor, textTransformRef, isSelected, setIsSelected
+  inputText, textColor, textTransformRef, isSelected, setIsSelected, canvasWidth = CANVAS_WIDTH, canvasHeight = CANVAS_WIDTH
 }) => {
   const textRef = useRef(null);
 
@@ -23,16 +23,16 @@ const TextPhraseLayer = ({
     if (!textRef.current) return;
     const textNode = textRef.current;
     const textWidth = textNode.width();
-    textNode.x((CANVAS_SIZE - textWidth) / 2);
-    textNode.y(CANVAS_SIZE - textNode.height() - TEXT_BOTTOM_PADDING * 3);
-  }, []);
+    textNode.x((canvasWidth - textWidth) / 2);
+    textNode.y(canvasHeight - textNode.height() - TEXT_BOTTOM_PADDING * 3);
+  }, [ canvasHeight ]);
 
 
   useEffect(() => {
     if (!textRef.current) return;
     const textNode = textRef.current;
     const textWidth = textNode.width();
-    textNode.x((CANVAS_SIZE - textWidth) / 2);
+    textNode.x((canvasWidth - textWidth) / 2);
   }, [ inputText ]);
 
   if (!inputText) return null;
@@ -65,8 +65,8 @@ const TextPhraseLayer = ({
         }}
         onDragMove={(e) => {
           const node = textRef.current;
-          const newX = Math.max(0, Math.min(CANVAS_SIZE - node.width(), e.target.x()));
-          const newY = Math.max(0, Math.min(CANVAS_SIZE - node.height(), e.target.y()));
+          const newX = Math.max(0, Math.min(canvasWidth - node.width(), e.target.x()));
+          const newY = Math.max(0, Math.min(canvasHeight - node.height(), e.target.y()));
           node.x(newX);
           node.y(newY);
         }} />

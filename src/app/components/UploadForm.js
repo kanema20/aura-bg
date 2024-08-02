@@ -16,7 +16,7 @@ import TextPhraseLayer from "./TextPhraseLayer";
 import AuraBackgroundImageLayer from "./AuraBackgroundImageLayer";
 import AvatarImage from "./AvatarImage";
 import BACKGROUND_IMAGES from "./BACKGROUND_IMAGES";
-import { CANVAS_SIZE, INITIALS } from "./CONSTANTS";
+import { CANVAS_WIDTH, INITIALS } from "./CONSTANTS";
 import ENABLED_FILTERS from "./ENABLED_FILTERS";
 import AI_PHRASES from "./AI_PHRASES";
 
@@ -67,6 +67,7 @@ export default function UploadForm({ mode }) {
   const [ resultImageUrl, setResultImageUrl ] = useState("");
   // const [ resultImageUrl, setResultImageUrl ] = useState("34e8cf0a-9441-491a-8c6b-5d92ac1f0fb1___photo_2024-07-27_16-26-46.jpg");
   const [ originalImageUrl, setOriginalImageUrl ] = useState("");
+  const [ imageRatio, setImageRatio ] = useState(1);
   const [ selectedBackgroundIndex, setSelectedBackgroundIndex ] = useState("0");
   const [ editMode, setEditMode ] = useState(false);
   const [ inputText, setInputText ] = useState(INITIALS.inputText);
@@ -111,6 +112,7 @@ export default function UploadForm({ mode }) {
     setOriginalImageUrl(null);
     setSelectedBackgroundIndex(INITIALS.selectedBackgroundIndex);
     setEditMode(false);
+    setImageRatio(1);
     setInputPhrase(INITIALS.phraseText);
     setInputText(INITIALS.inputText);
     setTextColor(INITIALS.textColor);
@@ -206,7 +208,7 @@ export default function UploadForm({ mode }) {
             layout="vertical"
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 16 }}
-            style={{ maxWidth: CANVAS_SIZE }}
+            style={{ maxWidth: CANVAS_WIDTH }}
             initialValues={{ remember: true }}
             autoComplete="off">
             <Row>
@@ -228,9 +230,16 @@ export default function UploadForm({ mode }) {
                         console.info("status ", status);
                       }
                       if (status === "done") {
-                        setOriginalImageUrl(info.file.response.data.origFileName);
-                        setResultImageUrl(info.file.response.data.imageUrl);
-                        message.success(`${info.file.name} file uploaded successfully.`);
+                        const img = new window.Image();
+                        img.src = `/uploads/${info.file.response.data.origFileName}`;
+                        img.onload = () => {
+                          const ratio = img.width / img.height;
+                          setImageRatio(ratio);
+                          setOriginalImageUrl(info.file.response.data.origFileName);
+                          console.log("info.file ", info.file);
+                          setResultImageUrl(info.file.response.data.imageUrl);
+                          message.success(`${info.file.name} file uploaded successfully.`);
+                        };
                       }
                       else if (status === "error") {
                         message.error(`${info.file.name} file upload failed.`);
@@ -393,7 +402,7 @@ export default function UploadForm({ mode }) {
           lg={14}
           xl={14}>
           <div className="flex flex-col items-center justify-center">
-            <Stage id="stage" width={CANVAS_SIZE} height={CANVAS_SIZE}
+            <Stage id="stage" width={CANVAS_WIDTH} height={CANVAS_WIDTH / imageRatio}
               ref={stageRef}>
               <Layer>
                 {activeTab === MODES.pp && (
@@ -405,6 +414,7 @@ export default function UploadForm({ mode }) {
                 <AvatarImage
                   shadowEnabled={activeTab === MODES.profilePictureMaker}
                   pixelsJsLoaded={pixelsJsLoaded}
+                  canvasHeight={CANVAS_WIDTH / imageRatio}
                   imageFilter={imageFilter}
                   resultImageUrl={activeTab === MODES.memeGenerator ? originalImageUrl : resultImageUrl}
                   mainImageRef={activeTab === MODES.memeGenerator ? avatarOriginalImageRef : avatarImageRef}
@@ -413,8 +423,8 @@ export default function UploadForm({ mode }) {
                   mainImageTransformRef={activeTab === MODES.memeGenerator ? avatarOriginalImageTransformRef : avatarImageTransformRef} />
                 {enableDarkBackground && (
                   <Rect
-                    width={CANVAS_SIZE}
-                    height={CANVAS_SIZE}
+                    width={CANVAS_WIDTH}
+                    height={CANVAS_WIDTH / imageRatio}
                     draggable={false}
                     fill="black"
                     listening={false}
@@ -424,6 +434,7 @@ export default function UploadForm({ mode }) {
                   <TextPhraseLayer
                     inputText={inputPhrase}
                     textColor={phraseColor}
+                    canvasHeight={CANVAS_WIDTH / imageRatio}
                     textTransformRef={textTransformRef}
                     isSelected={editMode}
                     setIsSelected={setEditMode} />
@@ -431,6 +442,7 @@ export default function UploadForm({ mode }) {
                 <TextAmountLayer
                   inputText={inputText}
                   textColor={textColor}
+                  canvasHeight={CANVAS_WIDTH / imageRatio}
                   textTransformRef={textTransformRef2}
                   isSelected={editMode}
                   setIsSelected={setEditMode} />
