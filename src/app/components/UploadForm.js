@@ -129,7 +129,7 @@ export default function UploadForm({ mode }) {
   }, [ form ]);
   const handleRandomize = useCallback(() => {
     setSelectedBackgroundIndex(_.random(0, BACKGROUND_IMAGES.length - 1).toString());
-    const randomInput = `+ ${_.random(100, 999)}} aura`;
+    const randomInput = `+ ${_.random(100, 9999)} aura`;
     setInputText(randomInput);
     const randomPhrase = _.sample(AI_PHRASES);
     setInputPhrase(randomPhrase);
