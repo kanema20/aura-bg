@@ -9,17 +9,20 @@ import { BRIGHTNESS, ENHANCE, CANVAS_WIDTH } from "./CONSTANTS";
 
 
 const AvatarImage = ({
-  resultImageUrl, mainImageRef, isSelected, setIsSelected, mainImageTransformRef, imageFilter, pixelsJsLoaded, shadowEnabled = false, canvasWidth = CANVAS_WIDTH, canvasHeight = CANVAS_WIDTH
+  resultImageUrl, mainImageRef, editMode, setEditMode, mainImageTransformRef, imageFilter, pixelsJsLoaded, shadowEnabled = false, canvasWidth = CANVAS_WIDTH, canvasHeight = CANVAS_WIDTH
 }) => {
   const fullUrl = resultImageUrl ? `${window.location.origin}/uploads/${resultImageUrl}` : null;
   const [ image ] = useImage(fullUrl);
 
   useEffect(() => {
+    console.log("LOG ~ useEffect ~ useEffect: 1");
     if (!mainImageRef.current || !image || !pixelsJsLoaded) return;
     const img = new window.Image();
     img.src = fullUrl;
 
     img.onload = () => {
+      console.log("LOG ~ onload ~ onload: 1");
+
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
       canvas.width = img.width;
@@ -56,6 +59,7 @@ const AvatarImage = ({
 
 
   useEffect(() => {
+    console.log("LOG ~ useEffect ~ useEffect: 2");
     if (!mainImageRef.current || !image || !pixelsJsLoaded) return;
     const img = new window.Image();
     img.src = fullUrl;
@@ -93,7 +97,7 @@ const AvatarImage = ({
         image={image}
         ref={mainImageRef}
         draggable
-        onClick={() => setIsSelected(oldState => !oldState)}
+        onClick={() => setEditMode(oldState => !oldState)}
         shadowColor="white"
         shadowBlur={10}
         shadowOffset={{
@@ -106,16 +110,23 @@ const AvatarImage = ({
         onTransformEnd={() => {
           const node = mainImageRef.current;
           const scaleX = node.scaleX();
+          // console.log("scaleX ", scaleX);
           const scaleY = node.scaleY();
-          node.scaleX(1);
-          node.scaleY(1);
+          // console.log("scaleY ", scaleY);
+          // node.scaleX(scaleX);
+          // node.scaleY(scaleY);
           const nodeWidth = node.width() * scaleX;
-          node.width(nodeWidth);
+          // console.log("node.width() ", node.width());
+          // console.log("nodeWidth ", nodeWidth);
+          // node.width(nodeWidth);
           const nodeHeight = node.height() * scaleY;
-          node.height(nodeHeight);
+          // console.log("node.height() ", node.height());
+          // console.log("nodeHeight ", nodeHeight);
+          // node.height(nodeHeight);
+          // console.log("-----------------");
         }}
         onDragEnd={(e) => { }} />
-      {isSelected && (
+      {editMode && (
         <Transformer
           ref={mainImageTransformRef}
           anchorSize={5}

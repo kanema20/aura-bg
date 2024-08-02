@@ -10,7 +10,7 @@ import { BRIGHTNESS, ENHANCE, CANVAS_WIDTH } from "./CONSTANTS";
 
 
 const AuraBackgroundImageLayer = ({
-  selectedBackgroundIndex, backgroundImageRef, setIsSelected, canvasWidth = CANVAS_WIDTH, canvasHeight = CANVAS_WIDTH
+  selectedBackgroundIndex, backgroundImageRef, setEditMode, canvasWidth = CANVAS_WIDTH, canvasHeight = CANVAS_WIDTH
 }) => {
   const [ image ] = useImage(`${window.location.origin}/${BACKGROUND_IMAGES[selectedBackgroundIndex]}`);
 
@@ -45,7 +45,7 @@ const AuraBackgroundImageLayer = ({
   return (
     <>
       <KonvaImage
-        onClick={() => setIsSelected(false)}
+        onClick={() => setEditMode(false)}
         image={image}
         ref={backgroundImageRef} />
     </>

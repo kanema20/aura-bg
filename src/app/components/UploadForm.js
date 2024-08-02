@@ -54,14 +54,6 @@ const FILTER_OPTIONS = _(ALL_FILTER_OPTIONS)
 
 
 
-const getBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-
 export default function UploadForm({ mode }) {
   const [ image, setImage ] = useState(null);
   const [ resultImageUrl, setResultImageUrl ] = useState("");
@@ -79,6 +71,10 @@ export default function UploadForm({ mode }) {
   const [ form ] = Form.useForm();
   const [ activeTab, setActiveTab ] = useState(MODES[mode] || MODES.memeGenerator);
   const [ enableDarkBackground, setEnableDarkBackground ] = useState(true);
+
+  // useEffect(() => {
+  //   handleReset();
+  // }, [ activeTab ]);
 
   const stageRef = useRef(null);
   const avatarImageRef = useRef(null);
@@ -228,6 +224,7 @@ export default function UploadForm({ mode }) {
                     action={`${process.env.NEXT_PUBLIC_API_ADDRESS}/upload`}
                     onChange={(info) => {
                       const { status } = info.file;
+                      setEditMode(false);
                       if (status !== "uploading") {
                         console.info("status ", status);
                       }
@@ -409,7 +406,7 @@ export default function UploadForm({ mode }) {
               <Layer>
                 {activeTab === MODES.pp && (
                   <AuraBackgroundImageLayer
-                    setIsSelected={setEditMode}
+                    setEditMode={setEditMode}
                     selectedBackgroundIndex={selectedBackgroundIndex}
                     backgroundImageRef={backgroundImageRef} />
                 )}
@@ -420,8 +417,8 @@ export default function UploadForm({ mode }) {
                   imageFilter={imageFilter}
                   resultImageUrl={activeTab === MODES.memeGenerator ? originalImageUrl : resultImageUrl}
                   mainImageRef={activeTab === MODES.memeGenerator ? avatarOriginalImageRef : avatarImageRef}
-                  isSelected={editMode}
-                  setIsSelected={setEditMode}
+                  editMode={editMode}
+                  setEditMode={setEditMode}
                   mainImageTransformRef={activeTab === MODES.memeGenerator ? avatarOriginalImageTransformRef : avatarImageTransformRef} />
                 {enableDarkBackground && (
                   <Rect
@@ -438,16 +435,16 @@ export default function UploadForm({ mode }) {
                     textColor={phraseColor}
                     canvasHeight={CANVAS_WIDTH / imageRatio}
                     textTransformRef={textTransformRef}
-                    isSelected={editMode}
-                    setIsSelected={setEditMode} />
+                    editMode={editMode}
+                    setEditMode={setEditMode} />
                 )}
                 <TextAmountLayer
                   inputText={inputText}
                   textColor={textColor}
                   canvasHeight={CANVAS_WIDTH / imageRatio}
                   textTransformRef={textTransformRef2}
-                  isSelected={editMode}
-                  setIsSelected={setEditMode} />
+                  editMode={editMode}
+                  setEditMode={setEditMode} />
               </Layer>
             </Stage>
             <div className="flex justify-end mt-2">

@@ -8,17 +8,17 @@ import { CANVAS_WIDTH, TEXT_BOTTOM_PADDING } from "./CONSTANTS";
 
 
 const TextAmountLayer = ({
-  inputText, textColor, textTransformRef, isSelected, setIsSelected,
+  inputText, textColor, textTransformRef, editMode, setEditMode,
   canvasWidth = CANVAS_WIDTH, canvasHeight = CANVAS_WIDTH
 }) => {
   const textRef = useRef(null);
 
   useEffect(() => {
-    if (isSelected && textTransformRef.current && textRef.current) {
+    if (editMode && textTransformRef.current && textRef.current) {
       textTransformRef.current.nodes([ textRef.current ]);
       textTransformRef.current.getLayer().batchDraw();
     }
-  }, [ isSelected, textTransformRef, textRef ]);
+  }, [ editMode, textTransformRef, textRef ]);
 
   useEffect(() => {
     if (!textRef.current) return;
@@ -41,7 +41,7 @@ const TextAmountLayer = ({
         fontStyle="bold"
         align="center"
         draggable
-        onClick={() => setIsSelected(oldState => !oldState)}
+        onClick={() => setEditMode(oldState => !oldState)}
         shadowBlur={10}
         // shadowColor="rgba(255,255,255,1)"
         shadowColor="white"
@@ -63,7 +63,7 @@ const TextAmountLayer = ({
           node.x(newX);
           node.y(newY);
         }} />
-      {isSelected && (
+      {editMode && (
         <Transformer
           ref={textTransformRef}
           enabledAnchors={[ "top-left", "top-right", "bottom-left", "bottom-right" ]}
