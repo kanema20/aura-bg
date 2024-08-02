@@ -584,7 +584,7 @@ const ResizableText = ({
         onClick={() => setIsSelected(oldState => !oldState)}
         shadowBlur={10}
         // shadowColor="rgba(255,255,255,1)"
-        shadowColor="rgba(0,0,0,1)"
+        shadowColor="white"
         shadowOffsetX={0}
         shadowOffsetY={0}
         onTransformEnd={(e) => {
