@@ -119,6 +119,7 @@ a {
   overflow: hidden;
 }
 
+.ant-upload-list-item.ant-upload-list-item-error,
 .ant-upload-list-item.ant-upload-list-item-done {
   display: none !important;
 }

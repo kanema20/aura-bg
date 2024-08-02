@@ -7,7 +7,6 @@ import UploadForm from "./components/UploadForm";
 import { ConfigProvider, theme, Button, Layout, Typography } from "antd";
 import Avatar from "antd/es/avatar/avatar";
 
-
 import aura from "../../public/images/aura.jpg";
 import THEME from "./_theme";
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
@@ -18,7 +17,7 @@ const {
 } = Layout;
 const { Text } = Typography;
 
-const PageWrapper = () => {
+const PageWrapper = ({ mode }) => {
 
   const [ isDarkMode, setIsDarkMode ] = useState(true);
 
@@ -47,8 +46,8 @@ const PageWrapper = () => {
               icon={isDarkMode ? <SunOutlined /> : <MoonOutlined />} />
           </div>
         </Header>
-        <Content className="grow p-4 my-5 flex justify-center">
-          <UploadForm />
+        <Content className="grow p-4 my-5 flex flex-col items-center">
+          <UploadForm mode={mode} />
         </Content>
         <Footer className={`pt-[10px] py-[10px] flex justify-center text-white opacity-50 ${bgColor}`}>
           <Text className="text-sm">Copyright by AURA</Text>

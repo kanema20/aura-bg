@@ -2,11 +2,12 @@ import dynamic from "next/dynamic";
 import PageWrapper from "./page-wrapper";
 
 
-const Page = () => {
-
+const Page = ({ searchParams }) => {
+  console.log("searchParams ", searchParams);
+  const mode = searchParams?.mode;
   return (
     <>
-      <PageWrapper />
+      <PageWrapper mode={mode} />
     </>
   );
 
