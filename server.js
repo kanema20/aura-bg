@@ -43,7 +43,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-const uiAddress =  process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://meme-gen-v2.vercel.app/";
+const uiAddress =  process.env.NODE_ENV === "development" ? "http://localhost:3000" : "http://http://49.13.145.42/";
 
 nextApp.prepare()
   .then(() => {
