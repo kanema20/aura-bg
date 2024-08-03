@@ -36,7 +36,8 @@
     "react-konva": "^18.2.10",
     "tailwind": "^4.0.0",
     "use-image": "^1.1.1",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "vercel": "^35.2.3"
   },
   "devDependencies": {
     "@types/react": "18.3.3",

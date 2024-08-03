@@ -36,7 +36,7 @@ const TABS = [
   },
   {
     key: MODES.profilePictureMaker,
-    label: "Profile Picture Maker"
+    label: "PFP Generator"
   }
 ];
 
@@ -300,7 +300,7 @@ export default function UploadForm({ mode }) {
                 <Col span={16}>
                   <Form.Item
                     labelCol={{ span: 24 }}
-                    label="1st Line phrase"
+                    label="Auramaxxing Phrase"
                     initialValue={inputPhrase}
                     shouldUpdate={(prevValues, curValues) => inputPhrase !== curValues.inputPhrase}
                     name="inputPhrase"
@@ -336,7 +336,7 @@ export default function UploadForm({ mode }) {
               <Col span={16}>
                 <Form.Item
                   labelCol={{ span: 24 }}
-                  label="Text to add"
+                  label="Aura Points Value"
                   initialValue={inputText}
                   shouldUpdate={(prevValues, curValues) => inputText !== curValues.inputText}
                   name="inputText"
