@@ -46,7 +46,7 @@ const PageWrapper = ({ mode }) => {
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "#0000",
                 textShadow: "0 0 1px lime, 0 0 1px lime, 0 0 1px lime, 0 0 3px #fff, 0 0 3px #fff, 0 0 30px #fff, 0 0 17px #fff, 0 0 20px #fff"
-              }}>aura</span> memes
+              }}><a href="https://auramaxxing.xyz">aura</a></span> memes
             </h1>
           </div>
           <div>
