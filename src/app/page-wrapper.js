@@ -61,7 +61,7 @@ const PageWrapper = ({ mode }) => {
           </div>
         </Content>
         <Footer className={`pt-[10px] py-[10px] flex justify-center text-white opacity-50 ${bgColor}`}>
-          <Text className="text-sm">Copyright by AURA</Text>
+          <Text className="text-sm">Copyright by aura worldwide inc.</Text>
         </Footer>
       </Layout>
     </ConfigProvider>
