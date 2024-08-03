@@ -6,7 +6,7 @@ import "./globals.css";
 const archivo = Archivo({ subsets: [ "latin" ] });
 
 export const metadata = {
-  title: "AURA MEME",
+  title: "aura generator",
   description: ""
 };
 

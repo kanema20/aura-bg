@@ -25,7 +25,7 @@ const PageWrapper = ({ mode }) => {
     setIsDarkMode(!isDarkMode);
   }, [ isDarkMode ]);
 
-  const bgColor = isDarkMode ? "bg-gray-800" : "bg-slate-300";
+  const bgColor = isDarkMode ? "bg-black" : "bg-slate-100";
 
   return (
     <ConfigProvider
@@ -46,7 +46,7 @@ const PageWrapper = ({ mode }) => {
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "#0000",
                 textShadow: "0 0 1px lime, 0 0 1px lime, 0 0 1px lime, 0 0 3px #fff, 0 0 3px #fff, 0 0 30px #fff, 0 0 17px #fff, 0 0 20px #fff"
-              }}>aura</span> on sol
+              }}>aura</span> memes
             </h1>
           </div>
           <div>
