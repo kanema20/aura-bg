@@ -22,7 +22,8 @@ const AI_PHRASES = [
   "supporting your bro",
   "being a day 1",
   "thinking for yourself",
-  "auraaaaaaaa"
+  "auraaaaaaaa",
+  "aurapilled"
   // "Aura basic star",
   // "100% Aura Energy",
   // "A Disco Aura",
