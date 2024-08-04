@@ -6,7 +6,7 @@
     "api": "nodemon server.js --watch server.js",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start cross-env NODE_ENV=production node server",
     "start:prod:script": "cross-env NODE_ENV=production node server",
     "start:prod": "cross-env NODE_ENV=production pm2 start server.js --name aura-bg --env production",
     "lint": "next lint",
