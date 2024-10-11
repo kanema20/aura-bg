@@ -43,7 +43,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-const uiAddress =  process.env.NODE_ENV === "development" ? "http://localhost:3000" : "http://49.13.145.42";
+const uiAddress =  process.env.NODE_ENV === "development" ? "http://localhost:3000" : "http://54.224.213.175";
 
 nextApp.prepare()
   .then(() => {
